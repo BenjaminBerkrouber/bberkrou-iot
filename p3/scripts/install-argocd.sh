@@ -49,3 +49,15 @@ echo
 echo "===> Dev resources"
 
 kubectl get all -n dev
+
+echo
+echo "================================"
+echo " Argo CD installation complete"
+echo "================================"
+echo
+echo "To access the Argo CD UI:"
+echo
+echo "kubectl port-forward -n argocd svc/argocd-server 8080:443"
+echo
+echo "Then open:"
+echo "https://localhost:8080"
