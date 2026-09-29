@@ -8,7 +8,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/TON-LOGIN/TON-REPO.git
+    repoURL: https://github.com/BenjaminBerkrouber/bberkrou-iot.git
     targetRevision: main
     path: p3/confs/app
 

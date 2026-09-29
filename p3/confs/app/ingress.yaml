@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dev-app
+spec:
+  ingressClassName: traefik
+
+  defaultBackend:
+    service:
+      name: dev-app-service
+      port:
+        number: 80
