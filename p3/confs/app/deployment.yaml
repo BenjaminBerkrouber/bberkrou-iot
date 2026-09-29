@@ -18,9 +18,9 @@ spec:
     spec:
       containers:
         - name: dev-app
-          image: paulbouwer/hello-kubernetes:1.10
+          image: wil42/playground:v1
           ports:
-            - containerPort: 8080
+            - containerPort: 8888
           env:
             - name: MESSAGE
               value: "Hello from dev2"
