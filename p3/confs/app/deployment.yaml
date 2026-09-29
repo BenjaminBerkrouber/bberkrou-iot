@@ -18,9 +18,6 @@ spec:
     spec:
       containers:
         - name: dev-app
-          image: wil42/playground:v2
+          image: wil42/playground:v1
           ports:
             - containerPort: 8888
-          env:
-            - name: MESSAGE
-              value: "Hello from dev2"
