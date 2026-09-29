@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-CLUSTER_NAME="mon-cluster"
+CLUSTER_NAME="iot-cluster"
 
 if k3d cluster list | grep -q "$CLUSTER_NAME"; then
     echo "Cluster $CLUSTER_NAME already exists."
