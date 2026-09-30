@@ -94,7 +94,7 @@ echo "===> Installing Valkey"
     valkey/valkey \
     --namespace gitlab \
     --version "$VALKEY_CHART_VERSION" \
-    -f /vagrant/confs/valkey/values.yaml \
+    -f /vagrant/confs/apps/gitlab/requirements/valkey/values.yaml \
     --wait \
     --timeout 5m
 

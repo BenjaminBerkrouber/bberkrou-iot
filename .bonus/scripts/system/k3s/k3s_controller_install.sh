@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-source /vagrant/confs/cluster.env
+source /vagrant/confs/system/cluster.env
 
 # ============================================================
 # Kubectl configuration
@@ -41,7 +41,7 @@ echo "===> Installing K3s server configuration"
 
 mkdir -p /etc/rancher/k3s
 
-cp /vagrant/confs/k3s-server.yaml \
+cp /vagrant/confs/system/k3s-server.yaml \
     /etc/rancher/k3s/config.yaml
 
 echo "===> K3s configuration"
@@ -174,7 +174,7 @@ echo "K3s token exported to $TOKEN_FILE"
 echo "===> Creating Kubernetes namespaces"
 
 "${KUBECTL[@]}" apply \
-    -f /vagrant/confs/namespaces/
+    -f /vagrant/confs/system/namespaces/
 
 # ============================================================
 # Show namespaces

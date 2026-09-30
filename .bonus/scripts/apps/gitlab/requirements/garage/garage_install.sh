@@ -110,7 +110,7 @@ echo "===> Installing Garage ${GARAGE_VERSION}"
     garage/garage \
     --namespace "$NAMESPACE" \
     --version "$GARAGE_CHART_VERSION" \
-    -f /vagrant/confs/garage/values.yaml \
+    -f /vagrant/confs/apps/gitlab/requirements/garage/values.yaml \
     --wait \
     --timeout 5m
 

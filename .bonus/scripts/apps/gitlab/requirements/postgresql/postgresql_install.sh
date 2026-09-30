@@ -175,7 +175,7 @@ fi
 echo "===> Deploying PostgreSQL"
 
 "${KUBECTL[@]}" apply \
-    -f /vagrant/confs/postgresql/cluster.yaml
+    -f /vagrant/confs/apps/gitlab/requirements/postgresql/cluster.yaml
 
 # ============================================================
 # Wait for PostgreSQL

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-source /vagrant/confs/cluster.env
+source /vagrant/confs/system/cluster.env
 
 # ============================================================
 # Parameters received from Vagrant

@@ -6,7 +6,7 @@ KUBECONFIG_PATH="/etc/rancher/k3s/k3s.yaml"
 
 NAMESPACE="gitlab"
 
-VALUES_FILE="/vagrant/confs/gitlab/values.yaml"
+VALUES_FILE="/vagrant/confs/apps/gitlab/values.yaml"
 
 GITLAB_CHART_VERSION="10.4.1"
 
