@@ -3,7 +3,28 @@ set -euo pipefail
 
 source /vagrant/confs/cluster.env
 
+# ============================================================
+# Kubectl configuration
+# ============================================================
+
+KUBECONFIG_PATH="/etc/rancher/k3s/k3s.yaml"
+
+KUBECTL=(
+    kubectl
+    --kubeconfig
+    "$KUBECONFIG_PATH"
+)
+
+# ============================================================
+# Remove stale token
+# ============================================================
+
 rm -f "$TOKEN_FILE"
+
+# ============================================================
+# Firewall configuration
+# ============================================================
+
 echo "===> Firewall configuration for K3s"
 
 ufw allow 80/tcp
@@ -12,12 +33,25 @@ ufw allow "${K3S_API_PORT}/tcp"
 ufw allow from "$POD_CIDR" to any
 ufw allow from "$SERVICE_CIDR" to any
 
+# ============================================================
+# K3s server configuration
+# ============================================================
+
 echo "===> Installing K3s server configuration"
+
 mkdir -p /etc/rancher/k3s
-cp /vagrant/confs/k3s-server.yaml /etc/rancher/k3s/config.yaml
+
+cp /vagrant/confs/k3s-server.yaml \
+    /etc/rancher/k3s/config.yaml
 
 echo "===> K3s configuration"
+
 cat /etc/rancher/k3s/config.yaml
+echo
+
+# ============================================================
+# Download K3s installer
+# ============================================================
 
 echo "===> Downloading K3s installer"
 
@@ -28,9 +62,19 @@ curl -fL \
     https://raw.githubusercontent.com/k3s-io/k3s/main/install.sh \
     -o /tmp/install-k3s.sh
 
+chmod +x /tmp/install-k3s.sh
+
+# ============================================================
+# Install K3s controller
+# ============================================================
+
 echo "===> Installation of K3s controller"
 
-sh /tmp/install-k3s.sh
+/tmp/install-k3s.sh
+
+# ============================================================
+# Check K3s service
+# ============================================================
 
 echo "===> Checking K3s service"
 
@@ -53,43 +97,54 @@ else
     exit 1
 fi
 
+# ============================================================
+# Wait for Kubernetes API
+# ============================================================
+
 echo "===> Waiting for Kubernetes API"
 
 for attempt in {1..60}; do
 
-    if kubectl \
-        --kubeconfig /etc/rancher/k3s/k3s.yaml \
-        get nodes >/dev/null 2>&1; then
-
+    if "${KUBECTL[@]}" get nodes >/dev/null 2>&1; then
         echo "K3s API is ready."
         break
     fi
 
     if [ "$attempt" -eq 60 ]; then
         echo "K3s API unavailable after 120 seconds."
+
         systemctl status k3s --no-pager -l || true
         journalctl -u k3s --no-pager -n 100 || true
+
         exit 1
     fi
 
     echo "Waiting for K3s API... ($attempt/60)"
     sleep 2
+
 done
+
+# ============================================================
+# Kubernetes nodes
+# ============================================================
 
 echo "===> Kubernetes nodes"
 
-kubectl \
-    --kubeconfig /etc/rancher/k3s/k3s.yaml \
-    get nodes
+"${KUBECTL[@]}" get nodes
+
+# ============================================================
+# Configure kubectl for vagrant user
+# ============================================================
 
 echo "===> Configuration of kubectl for the vagrant user"
 
 mkdir -p /home/vagrant/.kube
 
-cp /etc/rancher/k3s/k3s.yaml \
+cp "$KUBECONFIG_PATH" \
     /home/vagrant/.kube/config
 
 chown -R vagrant:vagrant /home/vagrant/.kube
+
 chmod 700 /home/vagrant/.kube
 chmod 600 /home/vagrant/.kube/config
 
@@ -98,23 +153,40 @@ grep -qxF \
     /home/vagrant/.bashrc || \
 echo 'export KUBECONFIG=/home/vagrant/.kube/config' \
     >> /home/vagrant/.bashrc
+
+# ============================================================
+# Export token for workers
+# ============================================================
+
 echo "===> Exporting K3s token for workers"
 
-cat /var/lib/rancher/k3s/server/node-token > "$TOKEN_FILE"
+cat /var/lib/rancher/k3s/server/node-token \
+    > "$TOKEN_FILE"
+
 chmod 600 "$TOKEN_FILE"
 
 echo "K3s token exported to $TOKEN_FILE"
 
+# ============================================================
+# Create Kubernetes namespaces
+# ============================================================
 
 echo "===> Creating Kubernetes namespaces"
 
-"${KUBECTL[@]}" apply -f /vagrant/confs/namespaces/
+"${KUBECTL[@]}" apply \
+    -f /vagrant/confs/namespaces/
 
+# ============================================================
+# Show namespaces
+# ============================================================
 
 echo "===> Kubernetes namespaces"
 
 "${KUBECTL[@]}" get namespaces
 
+# ============================================================
+# Show Kubernetes resources
+# ============================================================
 
 echo "===> Kubernetes resources"
 

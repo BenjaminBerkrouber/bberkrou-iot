@@ -1,1 +1,3 @@
 .vagrant/
+.bonus/confs/postgresql/postgresql.env
+.bonus/k3s-node-token
