@@ -10,6 +10,10 @@ spec:
 
   imageName: ghcr.io/cloudnative-pg/postgresql:17.11-standard-trixie
 
+  postgresql:
+    parameters:
+      max_locks_per_transaction: "4096"
+
   affinity:
     nodeSelector:
       workload: data
@@ -18,7 +22,6 @@ spec:
     initdb:
       database: gitlabhq_production
       owner: gitlab
-
       secret:
         name: gitlab-postgresql-auth
 

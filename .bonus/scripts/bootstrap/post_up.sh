@@ -18,4 +18,9 @@ echo "===> Installing Garage"
 vagrant ssh bberkrouS \
     -c "sudo /vagrant/scripts/garage/garage_install.sh"
 
+echo "===> Installing GitLab"
+
+vagrant ssh bberkrouS \
+    -c "sudo /vagrant/scripts/gitlab/gitlab_install.sh"
+
 echo "===> Post-cluster bootstrap completed"
