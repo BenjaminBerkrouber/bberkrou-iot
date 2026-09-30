@@ -3,3 +3,4 @@
 .bonus/k3s-node-token
 .bonus/confs/system/cluster.env
 .bonus/confs/apps/gitlab/requirements/postgresql/postgresql.env
+.bonus/confs/apps/gitlab/cd.env
