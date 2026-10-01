@@ -1,0 +1,30 @@
+image:
+  tag: "7.2.14"
+
+nodeSelector:
+  workload: data
+
+dataStorage:
+  enabled: true
+  requestedSize: 2Gi
+  className: local-path
+
+auth:
+  enabled: true
+  usersExistingSecret: gitlab-valkey-auth
+
+  aclUsers:
+    default:
+      permissions: "~* &* +@all"
+      passwordKey: redis-password
+
+metrics:
+  enabled: true
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

@@ -1,0 +1,31 @@
+garage:
+  replicationFactor: "1"
+
+deployment:
+  kind: StatefulSet
+  replicaCount: 1
+
+nodeSelector:
+  workload: data
+
+persistence:
+  enabled: true
+
+  meta:
+    storageClass: local-path
+    size: 250Mi
+
+  data:
+    storageClass: local-path
+    size: 5Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+service:
+  type: ClusterIP

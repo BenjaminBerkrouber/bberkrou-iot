@@ -19,17 +19,23 @@ Vagrant.configure("2") do |config|
         end
 
         server.vm.provision "shell",
-        path: "scripts/ssh/ssh_install.sh"
+            path: "scripts/system/sudo/sudo_install.sh"
+
+        server.vm.provision "shell",
+            path: "scripts/system/ssh/ssh_install.sh"
 
         server.vm.provision "file",
-        source: File.expand_path("~/.ssh/id_ed25519.pub"),
-        destination: "/tmp/id_ed25519.pub"
+            source: File.expand_path("~/.ssh/id_ed25519.pub"),
+            destination: "/tmp/id_ed25519.pub"
 
         server.vm.provision "shell",
-        path: "scripts/ssh/ssh_access.sh"
+            path: "scripts/system/ssh/ssh_access.sh"
 
         server.vm.provision "shell",
-        path: "scripts/k3s/k3s_controller_install.sh"
+            path: "scripts/system/k3s/k3s_controller_install.sh"
+
+        server.vm.provision "shell",
+            path: "scripts/apps/helm/helm_install.sh"
     end
 
     # =========================
@@ -47,25 +53,24 @@ Vagrant.configure("2") do |config|
         end
 
         gitlab.vm.provision "shell",
-            path: "scripts/ssh/ssh_install.sh"
+            path: "scripts/system/sudo/sudo_install.sh"
+
+        gitlab.vm.provision "shell",
+            path: "scripts/system/ssh/ssh_install.sh"
 
         gitlab.vm.provision "file",
             source: File.expand_path("~/.ssh/id_ed25519.pub"),
             destination: "/tmp/id_ed25519.pub"
 
         gitlab.vm.provision "shell",
-            path: "scripts/ssh/ssh_access.sh"
+            path: "scripts/system/ssh/ssh_access.sh"
 
         gitlab.vm.provision "shell",
-            path: "scripts/k3s/k3s_agent_install.sh",
+            path: "scripts/system/k3s/k3s_agent_install.sh",
             env: {
                 "NODE_IP" => "192.168.56.111",
-                "NODE_ROLE" => "gitlab",
-                "NODE_LABEL" => "gitlab"
+                "NODE_ROLE" => "gitlab"
             }
-
-        # gitlab.vm.provision "shell", 
-        # path: "scripts/gitlab/gitlab_install.sh"
     end
 
     # =========================
@@ -83,25 +88,24 @@ Vagrant.configure("2") do |config|
         end
 
         data.vm.provision "shell",
-            path: "scripts/ssh/ssh_install.sh"
+            path: "scripts/system/sudo/sudo_install.sh"
+
+        data.vm.provision "shell",
+            path: "scripts/system/ssh/ssh_install.sh"
 
         data.vm.provision "file",
             source: File.expand_path("~/.ssh/id_ed25519.pub"),
             destination: "/tmp/id_ed25519.pub"
 
         data.vm.provision "shell",
-            path: "scripts/ssh/ssh_access.sh"
+            path: "scripts/system/ssh/ssh_access.sh"
 
         data.vm.provision "shell",
-            path: "scripts/k3s/k3s_agent_install.sh",
+            path: "scripts/system/k3s/k3s_agent_install.sh",
             env: {
                 "NODE_IP" => "192.168.56.112",
-                "NODE_ROLE" => "data",
-                "NODE_LABEL" => "data"
+                "NODE_ROLE" => "data"
             }
-
-        # data.vm.provision "shell", 
-        # path: "scripts/gitlab/data_install.sh"
     end
     
 
@@ -120,25 +124,40 @@ Vagrant.configure("2") do |config|
         end
         
         cd.vm.provision "shell",
-            path: "scripts/ssh/ssh_install.sh"
+            path: "scripts/system/sudo/sudo_install.sh"
+
+        cd.vm.provision "shell",
+            path: "scripts/system/ssh/ssh_install.sh"
 
         cd.vm.provision "file",
             source: File.expand_path("~/.ssh/id_ed25519.pub"),
             destination: "/tmp/id_ed25519.pub"
 
         cd.vm.provision "shell",
-            path: "scripts/ssh/ssh_access.sh"
+            path: "scripts/system/ssh/ssh_access.sh"
 
         cd.vm.provision "shell",
-            path: "scripts/k3s/k3s_agent_install.sh",
+            path: "scripts/system/k3s/k3s_agent_install.sh",
             env: {
                 "NODE_IP" => "192.168.56.113",
-                "NODE_ROLE" => "cd",
-                "NODE_LABEL" => "cd"
+                "NODE_ROLE" => "cd"
             }
+    end
 
-        # cd.vm.provision "shell", 
-        # path: "scripts/gitlab/cd_install.sh"
+    # =========================
+    # Post cluster bootstrap
+    # =========================
+
+    config.trigger.after :up, type: :command do |trigger|
+        trigger.name = "Post cluster bootstrap"
+        trigger.info = "Installing Kubernetes services after cluster startup"
+
+        trigger.run = {
+            path: File.expand_path(
+                "scripts/system/bootstrap/post_up.sh",
+                __dir__
+            )
+        }
     end
 
 end
