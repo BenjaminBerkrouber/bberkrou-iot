@@ -64,3 +64,13 @@ kubectl apply \
   --namespace "${ARGOCD_NAMESPACE}" \
   --filename "${ARGOCD_APP}"
 
+
+# To access the ArgoCD UI, you can use port forwarding:
+
+# kubectl port-forward -n argocd svc/argocd-server 8080:443
+
+# Id will be : admin
+# And you case use command 
+# kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+# To get the password
+
