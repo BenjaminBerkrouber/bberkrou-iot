@@ -10,8 +10,10 @@ readonly CLUSTER_NAME="iot"
 readonly ARGOCD_APP="${DIR}/confs/argocd-app.yaml"
 readonly K3D_CONFIG="${DIR}/confs/k3d-config.yaml"
 readonly ARGOCD_NAMESPACE="argocd"
+readonly ARGOCD_NAMESPACE_PATH="${DIR}/confs/argocd-namespace.yaml"
 readonly ARGOCD_VERSION="v3.2.0"
 readonly DEV_NAMESPACE="dev"
+readonly DEV_NAMESPACE_PATH="${DIR}/confs/dev-namespace.yaml"
 
 
 if k3d cluster list --no-headers | grep -E "^${CLUSTER_NAME}[[:space:]]"; then
@@ -28,7 +30,9 @@ if kubectl get namespace "${ARGOCD_NAMESPACE}" &> /dev/null; then
   echo "Namespace '${ARGOCD_NAMESPACE}' already exists."
 else
   echo "Creating namespace '${ARGOCD_NAMESPACE}'..."
-  kubectl create namespace "${ARGOCD_NAMESPACE}"
+  kubectl apply -f "${ARGOCD_NAMESPACE_PATH}"
+  echo "Creating namespace '${DEV_NAMESPACE}'..."
+  kubectl apply -f "${DEV_NAMESPACE_PATH}"
 fi
 
 echo "Deploying ArgoCD..."
