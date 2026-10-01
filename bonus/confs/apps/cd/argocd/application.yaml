@@ -11,11 +11,11 @@ spec:
 
   source:
 
-    repoURL: http://gitlab-webservice-default.gitlab.svc.cluster.local/bberkrou/bberkrou-iot.git
+    repoURL: http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/bberkrou/bberkrou-iot.git
 
     targetRevision: main
 
-    path: confs/apps/cd/dev/app
+    path: bonus/confs/apps/cd/dev/app
 
   destination:
 

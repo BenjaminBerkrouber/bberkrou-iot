@@ -3,15 +3,10 @@ kind: Kustomization
 
 namespace: argocd
 
-
 resources:
-
   - namespace.yaml
-
   - ingress.yaml
-
   - https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.3/manifests/install.yaml
-
 
 patches:
 
@@ -23,7 +18,6 @@ patches:
       kind: Deployment
 
     patch: |-
-
       - op: add
         path: /spec/template/spec/nodeSelector
         value:
@@ -38,7 +32,6 @@ patches:
       kind: StatefulSet
 
     patch: |-
-
       - op: add
         path: /spec/template/spec/nodeSelector
         value:
@@ -46,9 +39,8 @@ patches:
 
 
   # ==========================================================
-  # Traefik handles access to Argo CD.
-  #
-  # Argo CD itself therefore listens internally using HTTP.
+  # Argo CD runs behind Traefik.
+  # Disable Argo CD internal HTTPS redirect.
   # ==========================================================
 
   - target:
@@ -56,7 +48,9 @@ patches:
       name: argocd-cmd-params-cm
 
     patch: |-
-
-      - op: add
-        path: /data/server.insecure
-        value: "true"
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: argocd-cmd-params-cm
+      data:
+        server.insecure: "true"
