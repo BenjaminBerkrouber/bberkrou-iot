@@ -1,4 +1,0 @@
-.vagrant/
-*.env
-!*.env.example
-bonus/k3s-node-token

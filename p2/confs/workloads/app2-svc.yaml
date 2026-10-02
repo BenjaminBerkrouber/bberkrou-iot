@@ -1,12 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: dev-app-service
-
+  name: app2
 spec:
   selector:
-    app: dev-app
-
+    app: app2
   ports:
     - port: 80
-      targetPort: 8888
+      targetPort: 8080

@@ -1,44 +1,24 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-source /vagrant/confs/cluster.env
+WORKER_IP="192.168.56.111"
+SHARED_DIR="/shared"
+CONF_SRC="/vagrant/confs/k3s-agent.yaml"
+CONF_DST="/etc/rancher/k3s/config.yaml"
 
-echo "===> Waiting for K3s controller token"
+echo ">>> [worker] Détection de l'interface réseau pour ${WORKER_IP}..."
+IFACE=$(ip -o -4 addr show | awk -v ip="$WORKER_IP" '$4 ~ ip {print $2; exit}')
+echo ">>> [worker] Interface : ${IFACE}"
 
-while [ ! -f "$TOKEN_FILE" ]; do
-    echo "Waiting for controller..."
-    sleep 2
-done
+echo ">>> [worker] Attente du node-token du server..."
+while [ ! -f "${SHARED_DIR}/node-token" ]; do sleep 2; done
+TOKEN=$(cat "${SHARED_DIR}/node-token")
 
-K3S_TOKEN=$(cat "$TOKEN_FILE")
-
-echo "===> Checking K3s API server"
-
-until nc -z "$CONTROLLER_IP" "$K3S_API_PORT"; do
-    echo "Waiting for K3s API server..."
-    sleep 2
-done
-
-echo "K3s API server is reachable."
-
-echo "===> Installing K3s agent configuration"
-
+echo ">>> [worker] Mise en place de la config K3s..."
 mkdir -p /etc/rancher/k3s
-cp /vagrant/confs/k3s-agent.yaml /etc/rancher/k3s/config.yaml
+sed "s/__IFACE__/${IFACE}/" "${CONF_SRC}" > "${CONF_DST}"
 
-echo "===> Installing K3s agent"
+echo ">>> [worker] Installation de K3s (agent)..."
+curl -sfL https://get.k3s.io | K3S_TOKEN="${TOKEN}" INSTALL_K3S_EXEC="agent" sh -
 
-curl -sfL https://get.k3s.io | \
-K3S_URL="https://${CONTROLLER_IP}:${K3S_API_PORT}" \
-K3S_TOKEN="$K3S_TOKEN" \
-sh -
-
-echo "===> Checking K3s agent"
-
-if systemctl is-active --quiet k3s-agent; then
-    echo "K3s agent installation successful."
-else
-    echo "K3s agent installation failed."
-    journalctl -u k3s-agent --no-pager -n 50
-    exit 1
-fi
+echo ">>> [worker] Agent K3s démarré et rattaché au cluster."
