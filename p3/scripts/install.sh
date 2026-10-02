@@ -183,16 +183,20 @@ echo "Docker service is running."
 
 log "Configuring Docker permissions"
 
+DOCKER_GROUP_ADDED=0
+
 if id "$REAL_USER" >/dev/null 2>&1; then
 
     if id -nG "$REAL_USER" | grep -qw docker; then
         echo "$REAL_USER is already in the docker group."
     else
         usermod -aG docker "$REAL_USER"
+        DOCKER_GROUP_ADDED=1
         echo "$REAL_USER added to the docker group."
-        echo "A logout/login will be required for this change to take effect."
     fi
 
+else
+    error "User '$REAL_USER' does not exist."
 fi
 
 # ============================================================
@@ -317,6 +321,8 @@ echo "=========================================="
 echo
 
 docker --version
+newgrp docker
+
 echo
 kubectl version --client
 echo
