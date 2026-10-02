@@ -12,6 +12,7 @@ Vagrant.configure("2") do |config|
       vb.name   = SERVER
       vb.cpus   = 1
       vb.memory = 1024
+      vb.gpu = false
     end
     server.vm.provision "shell", path: "scripts/k3s/k3s_server_install.sh"
   end
