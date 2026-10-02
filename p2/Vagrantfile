@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"
+
+
+  # Custom Vbox params
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "1024"
+    vb.cpus = 1
+    vb.gui = false
+  end
+
+
+
+  # Multiple VM creation
+  config.vm.define "loginteamS" do |control|
+    control.vm.hostname = "loginteamS"
+    control.vm.network "private_network", ip: "192.168.56.110", netmask: "255.255.255.0"
+    
+    # Install provision using Shell
+    control.vm.provision "shell", path: "scripts/init_server.sh"
+  end
+
+end
