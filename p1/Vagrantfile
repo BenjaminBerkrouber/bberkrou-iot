@@ -1,4 +1,4 @@
-LOGIN  = "cpeterea"          # TODO: remplace par ton login 42
+LOGIN  = "cpeterea"
 SERVER = "#{LOGIN}S"
 WORKER = "#{LOGIN}SW"
 

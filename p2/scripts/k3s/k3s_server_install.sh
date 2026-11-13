@@ -7,29 +7,29 @@ CONF_DST="/etc/rancher/k3s/config.yaml"
 WORKLOADS="/vagrant/confs/workloads"
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-echo ">>> Détection de l'interface réseau pour ${SERVER_IP}..."
+echo ">>> Detecting the network interface for ${SERVER_IP}..."
 IFACE=$(ip -o -4 addr show | awk -v ip="$SERVER_IP" '$4 ~ ip {print $2; exit}')
-echo ">>> Interface : ${IFACE}"
+echo ">>> Interface: ${IFACE}"
 
-echo ">>> Mise en place de la config K3s..."
+echo ">>> Writing the K3s configuration..."
 mkdir -p /etc/rancher/k3s
 sed "s/__IFACE__/${IFACE}/" "${CONF_SRC}" > "${CONF_DST}"
 
-echo ">>> Installation de K3s (server)..."
+echo ">>> Installing K3s (server)..."
 curl -sfL https://get.k3s.io | sh -
 
-echo ">>> Attente que le noeud soit Ready..."
+echo ">>> Waiting for the node to be Ready..."
 until kubectl get nodes 2>/dev/null | grep -q " Ready"; do sleep 2; done
 
-echo ">>> Déploiement des applications et du routage..."
+echo ">>> Deploying applications and routing..."
 kubectl apply -f "${WORKLOADS}/"
 
-echo ">>> Attente du rollout..."
+echo ">>> Waiting for deployments to roll out..."
 kubectl rollout status deployment/app1
 kubectl rollout status deployment/app2
 kubectl rollout status deployment/app3
 
-echo ">>> État final :"
+echo ">>> Final status:"
 kubectl get all
 echo "---"
 kubectl get ingress

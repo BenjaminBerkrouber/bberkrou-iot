@@ -4,8 +4,8 @@ set -e
 SSH_FILE="/tmp/id_ed25519.pub"
 
 if [ ! -f "$SSH_FILE" ]; then
-    echo "Clé SSH publique introuvable."
-    echo "Vérifiez que ~/.ssh/id_ed25519.pub existe sur la machine hôte."
+    echo "SSH public key not found."
+    echo "Check that ~/.ssh/id_ed25519.pub exists on the host machine."
     exit 1
 fi
 
